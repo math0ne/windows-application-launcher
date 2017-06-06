@@ -1,0 +1,35 @@
+providers: [
+  {
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "C:\\Users\\math0\\Dropbox\\[projects]\\electron-quick-start"
+          source: "C:\\Users\\math0\\Dropbox\\[projects]\\electron-quick-start\\.build-tools.cson"
+          name: "Start Application"
+          command: "npm start"
+          wd: "."
+          env: {}
+          modifier: {}
+          environment:
+            name: "child_process"
+            config:
+              stdoe: "both"
+          stdout:
+            pipeline: []
+          stderr:
+            pipeline: []
+          output:
+            console:
+              close_success: true
+              queue_in_buffer: true
+              colors: false
+              stdin: false
+            linter:
+              no_trace: false
+              immediate: false
+          version: 2
+        }
+      ]
+  }
+]

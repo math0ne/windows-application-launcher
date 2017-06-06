@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+     <script>delete module.exports</script>
+     <script src="./node_modules/jquery/dist/jquery.js"></script>
+     <script src="./node_modules/jquery-ui-dist/jquery-ui.js"></script>
+     <script src="./node_modules/jquery-hotkeys/jquery-hotkeys.js"></script>
+    <script src="./build.js"></script>
+     <link rel="stylesheet" type="text/css" href="./main.css">
+     <link rel="stylesheet" type="text/css" href="./node_modules/jquery-ui-dist/jquery-ui.css">
+  </head>
+  <body>
+    <input type="text" class="maininput" />
+  </body>
+
+  <script>
+    // You can also require other files to run in this process
+    require('./renderer.js')
+  </script>
+</html>
