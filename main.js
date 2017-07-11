@@ -12,6 +12,8 @@ const electronLocalshortcut = require('electron-localshortcut');
 
 var fs = require('fs');
 var filePath = './local.json';
+var tempFile = fs.openSync(filePath, 'r');
+fs.closeSync(tempFile);
 fs.unlinkSync(filePath);
 
 //live Reload
@@ -51,7 +53,7 @@ function createWindow () {
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
   //fullscreen
   mainWindow.setFullScreen(true);
@@ -121,6 +123,9 @@ function createWindow () {
     const contextMenu = Menu.buildFromTemplate(myMenuArray);
     tray.setToolTip('This is my application.')
     tray.setContextMenu(contextMenu)
+    tray.on('click', () => {
+      mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show()
+    })
   })
 
   electronLocalshortcut.register(mainWindow, 'Escape', () => {

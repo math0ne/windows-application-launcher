@@ -12,6 +12,7 @@
   border: none;
   background-color: rgba(0, 0, 0, 0);
   color: white;
+  text-transform: lowercase;
   font-size: 22px;
   text-shadow: 0px 0px 0px white;
   -webkit-text-fill-color: transparent;
@@ -53,13 +54,17 @@ a.ui-button:active,
 .ui-button:active,
 .ui-button.ui-state-active:hover {
 	border: none !important;
-  border-top: 1px solid #00000 !important;
+  border-top: 1px solid #000000 !important;
 	background: white !important;
 	font-weight: normal !important;
 	color: rgb(0, 0, 0) !important;
   text-transform: lowercase !important;
 }
-
+.mode{
+  display: block;
+  width: 100px;
+  text-align: right;
+}
 .ui-menu-item-wrapper{
   text-transform: lowercase !important;
 }

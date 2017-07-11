@@ -1,3 +1,4 @@
+// this is used to inject themes into the app while running
 function loadjscssfile(filename, filetype){
     if (filetype=="js"){ //if filename is a external JavaScript file
         var fileref=document.createElement('script')
@@ -14,6 +15,7 @@ function loadjscssfile(filename, filetype){
         document.getElementsByTagName("head")[0].appendChild(fileref)
 }
 
+// this is used to inject themes into the app while running
 function removejscssfile(filename, filetype){
     var targetelement=(filetype=="js")? "script" : (filetype=="css")? "link" : "none" //determine element type to create nodelist from
     var targetattr=(filetype=="js")? "src" : (filetype=="css")? "href" : "none" //determine corresponding attribute to test for
@@ -24,7 +26,7 @@ function removejscssfile(filename, filetype){
     }
 }
 
-
+// used to create master plugin list
 function ArrNoDupe(a) {
     var temp = {};
     for (var i = 0; i < a.length; i++)
@@ -34,6 +36,55 @@ function ArrNoDupe(a) {
         r.push(k);
     return r;
 }
+
+
+// page wide variables
+var programs = [];
+var pluginsData = [];
+pluginsData.push("combi");
+var pluginsDataNumbered = [];
+//this is the var that tracks the actual commands vs their names
+var programsData = new Object();
+var newData = new Object();
+var currentList = 0;
+
+
+// this controls cycling through the plugins
+function cyclePlugin(direction){
+
+  // control the flow!
+  if(direction == "right") {
+    if(currentList == (pluginsDataNumbered.length - 1)){
+      currentList = 0;
+    } else{
+      currentList = currentList + 1;
+    }
+  } else {
+    if(currentList == 0){
+      currentList = (pluginsDataNumbered.length - 1);
+    } else {
+      currentList = currentList - 1;
+    }
+  }
+
+  // gets the next list from the actual data
+  nextlist = pluginsDataNumbered[currentList];
+
+  $('.maininput').autocomplete('close');
+
+  // set the sources
+  $(".mode").html(nextlist + ":&nbsp;");
+  $( ".maininput" ).autocomplete('option', 'source', function(request, response) {
+    var results = $.ui.autocomplete.filter(newData[nextlist], request.term);
+    response(results.slice(0, this.options.maxResults));
+  })
+
+  // forcus back
+  $('.maininput').val('');
+  $('.maininput').focus();
+
+}
+
 
 $( document ).ready(function() {
 
@@ -66,62 +117,49 @@ $( document ).ready(function() {
     loadjscssfile("./themes/" + arg, "css")
   });
 
-  //failed attempt at move control
-  /*
-  $(document).on('keydown', null, 'ctrl+a', function( ) {
-    remote.getCurrentWindow().setIgnoreMouseEvents(false)
-    $(".maininput").css("-webkit-app-region", "drag");
-    //alert('msg');
-  });
-  $(document).on('keyup', null, 'ctrl+a', function( ) {
-    remote.getCurrentWindow().setIgnoreMouseEvents(true)
-    $(".maininput").css("-webkit-app-region", "nodrag");
-    //alert('msg');
-  });
-  */
-  //remote.getCurrentWindow().bind('dragend', function(){ alert("test") });
-
-  //this var is for the autocomplete widget
-  var programs = [];
-  var pluginsData = [];
-  //this is the var that tracks the actual commands vs their names
-  var programsData = new Object();
-
   //look up all command and load them into the variables for use in autocomplete
   db.find({}, function (err, docs) {
 
-    docs.forEach(function(entry) {
+    // here we create the master plgin list
+    db.find({}, function (err, docs) {
+      docs.forEach(function(entry) {
         //console.log(entry.file);
+        pluginsData.push(entry.plugin);
+        pluginsData[entry.plugin] = new Array();
+      });
+      pluginsData = ArrNoDupe(pluginsData)
+
+      // initializing the arrays that will stor the sorted plugin links
+      pluginsData.forEach(function(item){
+        newData[item] = new Array();
+      })
+
+      // add a special item to the sorted data array that will store all links
+      newData["combi"] = new Array();
+
+      // here we push all the data to the various variables that need it
+      docs.forEach(function(entry) {
         filename = entry.file.replace(/^.*[\\\/]/, '');
         filename = filename.replace(/\.[^/.]+$/, "");
         programs.push(filename);
         programsData[filename] = entry.file;
+        newData[entry.plugin].push(filename);
+        newData["combi"].push(filename);
+      });
+
+      // we also need a numbered array fo plgins that will be used to cycle
+      counterplugins = 0;
+      pluginsData.forEach(function(item){
+        pluginsDataNumbered[counterplugins] = item;
+        counterplugins++;
+      })
+
     });
 
   });
 
-  db.find({}, function (err, docs) {
-    docs.forEach(function(entry) {
-      //console.log(entry.file);
-      pluginsData.push(entry.plugin);
-    });
-    pluginsData = ArrNoDupe(pluginsData)
-    console.log(pluginsData);
-  });
 
-
-
-
-
-  function cyclePlugin(direction){
-
-  }
-
-  //console.log(programsData);
-  //console.log(programs);
-
-
-  //initialize the autocomplete
+  // initialize the autocomplete
   $( ".maininput" ).autocomplete({
     autoFocus: true,
     maxResults: 8,
@@ -140,7 +178,5 @@ $( document ).ready(function() {
       $('.maininput').val("");
     }
   });
-
-
 
 });
