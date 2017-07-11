@@ -1,4 +1,65 @@
+@font-face {
+  font-family: "Sauce Code Pro";
+  src: url("fonts/Sauce Code Pro Semibold Nerd Font Complete Mono Windows Compatible.ttf") format("truetype");
+}
+
 .maininput{
-  position: absolute;
-  bottom: 0px;
+  width: 400px;
+  font-family: "Sauce Code Pro";
+  margin-top: auto;
+  margin-bottom: auto;
+  top:50%;
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  font-size: 22px;
+  text-shadow: 0px 0px 0px white;
+  -webkit-text-fill-color: transparent;
+}
+.maininput:focus{
+  outline: none;
+}
+.maininput::-webkit-input-placeholder{
+  color: #ccc;
+  text-shadow: none;
+  -webkit-text-fill-color: initial;
+}
+#container {
+  background: rgba(46, 138, 138, 0.8);
+  color: white;
+  font-size: 22px;
+  display: flex;           /* establish flex container */
+  flex-direction: row;  /* make main axis vertical */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: center;     /* center items horizontally, in this case */
+  font-family: "Sauce Code Pro";
+  height: 100%;
+}
+.ui-widget-content{
+  background: rgba(0, 0, 0, 0) !important;
+  border: none !important;
+}
+.ui-menu li{
+  font-family: "Sauce Code Pro";
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  font-size: 22px;
+  margin-left: -8px !important;
+}
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active,
+a.ui-button:active,
+.ui-button:active,
+.ui-button.ui-state-active:hover {
+	border: none !important;
+  border-top: 1px solid #124040 !important;
+	background: white !important;
+	font-weight: normal !important;
+	color: rgb(46, 138, 138) !important;
+  text-transform: lowercase !important;
+}
+
+.ui-menu-item-wrapper{
+  text-transform: lowercase !important;
 }

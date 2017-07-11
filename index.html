@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="height: 100%; margin: 0px; padding: 0px;">
   <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
@@ -7,12 +7,15 @@
      <script src="./node_modules/jquery/dist/jquery.js"></script>
      <script src="./node_modules/jquery-ui-dist/jquery-ui.js"></script>
      <script src="./node_modules/jquery-hotkeys/jquery-hotkeys.js"></script>
+     <script src="./node_modules/underscore/underscore.js"></script>
     <script src="./build.js"></script>
-     <link rel="stylesheet" type="text/css" href="./main.css">
      <link rel="stylesheet" type="text/css" href="./node_modules/jquery-ui-dist/jquery-ui.css">
+     <link rel="stylesheet" type="text/css" href="./main.css">
   </head>
-  <body>
-    <input type="text" class="maininput" />
+  <body style="height: 100%; margin: 0px; padding: 0px;">
+    <div id="container">
+    <span class="mode">run:&nbsp;</span><input type="text" class="maininput" />
+  </div>
   </body>
 
   <script>
