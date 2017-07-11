@@ -1,3 +1,3 @@
 # Windows Application Launcher
 
-*WIP* This is not usable *WIP*
+![Windows Application Launcher](https://raw.githubusercontent.com/math0ne/windows-application-launcher/master/launch-demo.webm "Windows Application Launcher Demo")
