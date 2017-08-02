@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "awesomplete": "^1.1.1",
+    "electron-localshortcut": "^2.0.2",
     "electron-prebuilt": "^1.4.13",
     "electron-rebuild": "^1.5.11",
     "findit": "^2.0.0",

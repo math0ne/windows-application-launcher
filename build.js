@@ -1,3 +1,5 @@
+
+
 // this is used to inject themes into the app while running
 function loadjscssfile(filename, filetype){
     if (filetype=="js"){ //if filename is a external JavaScript file
@@ -48,7 +50,6 @@ var programsData = new Object();
 var newData = new Object();
 var currentList = 0;
 
-
 // this controls cycling through the plugins
 function cyclePlugin(direction){
 
@@ -85,37 +86,11 @@ function cyclePlugin(direction){
 
 }
 
-
-$( document ).ready(function() {
-
-  $(".maininput").focus();
-
-  //requires
+function reloadPlugins(firstRun){
+  console.log("test");
+  var Datastore = require('nedb');
+  global.db = new Datastore({ filename: './local.json', autoload: true });
   var remote = require('electron').remote;
-  var db = remote.getGlobal('db');
-  var ipcRenderer = require('electron').ipcRenderer;
-  require('underscore');
-
-  //manage messages from the main process
-  ipcRenderer.on('ping', function(arg){
-    //console.log(arg);
-    remote.getCurrentWindow().focus()
-    $(".maininput").focus()
-  });
-
-  //theme managment
-  var currentTheme = "";
-  ipcRenderer.on('theme', function(event, arg){
-    console.log(event);
-    console.log(arg);
-
-    if(currentTheme != ""){
-      //alert("testremove");
-      removejscssfile("./themes/" + currentTheme, "css");
-    }
-    currentTheme = arg;
-    loadjscssfile("./themes/" + arg, "css")
-  });
 
   //look up all command and load them into the variables for use in autocomplete
   db.find({}, function (err, docs) {
@@ -156,27 +131,78 @@ $( document ).ready(function() {
 
     });
 
+    if(firstRun == true){
+     // initialize the autocomplete
+     $( ".maininput" ).autocomplete({
+       autoFocus: true,
+       maxResults: 8,
+       source: function(request, response) {
+         var results = $.ui.autocomplete.filter(programs, request.term);
+         response(results.slice(0, this.options.maxResults));
+       },
+       position: {  collision: "flip"  },
+       select: function( event, ui ) {
+         var exec = require("child_process").exec;
+         path = programsData[ui.item.value].split("\\").join("\\\\");;
+         exec('start "name" "' + path + '"');
+         remote.BrowserWindow.getFocusedWindow().hide();
+       },
+       change: function( event, ui ) {
+         $('.maininput').val("");
+       }
+     });
+    } else{
+     //reload the autocomplete widget
+     thislist = pluginsDataNumbered[currentList];
+     $( ".maininput" ).autocomplete('option', 'source', function(request, response) {
+       var results = $.ui.autocomplete.filter(newData[thislist], request.term);
+       response(results.slice(0, this.options.maxResults));
+     })
+
+     // forcus back
+     $('.maininput').val('');
+     $('.maininput').focus();
+   }
+
+
+
+  });
+}
+
+$( document ).ready(function() {
+
+
+  $(".maininput").focus();
+
+  //requires
+
+  require('underscore');
+
+  const ipcRenderer = require('electron').ipcRenderer;
+  //manage messages from the main process
+  ipcRenderer.on('ping', function(arg){
+    //console.log(arg);
+    remote.getCurrentWindow().focus()
+    $(".maininput").focus()
   });
 
+  //theme managment
+  var currentTheme = "";
+  ipcRenderer.on('theme', function(event, arg){
+    console.log(event);
+    console.log(arg);
 
-  // initialize the autocomplete
-  $( ".maininput" ).autocomplete({
-    autoFocus: true,
-    maxResults: 8,
-    source: function(request, response) {
-      var results = $.ui.autocomplete.filter(programs, request.term);
-      response(results.slice(0, this.options.maxResults));
-    },
-    position: {  collision: "flip"  },
-    select: function( event, ui ) {
-      var exec = require("child_process").exec;
-      path = programsData[ui.item.value].split("\\").join("\\\\");;
-      exec('start "name" "' + path + '"');
-      remote.BrowserWindow.getFocusedWindow().hide();
-    },
-    change: function( event, ui ) {
-      $('.maininput').val("");
+    if(currentTheme != ""){
+      //alert("testremove");
+      removejscssfile("./themes/" + currentTheme, "css");
     }
+    currentTheme = arg;
+    loadjscssfile("./themes/" + arg, "css")
   });
+
+  reloadPlugins(true);
+
+
+
 
 });

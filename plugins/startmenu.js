@@ -4,7 +4,7 @@ const path = require('path')
 
 
 var Datastore = require('nedb');
-global.db = new Datastore({ filename: './local.json', autoload: true });
+
 // You can issue commands right away
 
 finder.on('file', function (file, stat) {

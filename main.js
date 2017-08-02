@@ -8,13 +8,13 @@ const path = require('path')
 const url = require('url')
 const {Menu, Tray} = require('electron')
 const electronLocalshortcut = require('electron-localshortcut');
-
-
 var fs = require('fs');
-var filePath = './local.json';
-var tempFile = fs.openSync(filePath, 'r');
-fs.closeSync(tempFile);
-fs.unlinkSync(filePath);
+var glob = require( 'glob' );
+
+var Datastore = require('nedb');
+global.db = new Datastore({ filename: './local.json', autoload: true });
+
+var $ = require('jQuery');
 
 //live Reload
 require('electron-reload')("index.html", "main.js", "main.css", "build.js", {
@@ -23,11 +23,71 @@ require('electron-reload')("index.html", "main.js", "main.css", "build.js", {
 
 
 //load the plugins
-var glob = require( 'glob' );
-glob.sync( './plugins/*.js' ).forEach( function( file ) {
-  require( path.resolve( file ) );
-});
+function reloadDatabase(){
 
+  var filePath = './local.json';
+  var tempFile = fs.openSync(filePath, 'r');
+  fs.closeSync(tempFile);
+  fs.unlinkSync(filePath);
+
+
+  //pause while the file deletes?
+  setTimeout(function() {
+    glob.sync( './plugins/*.js' ).forEach( function( file ) {
+      require( path.resolve( file ) );
+      panels
+    });
+  }, 2000);
+
+
+  panels = {};
+
+  $(function(){
+      var includes = {
+          'panels': {'items': PANELS, 'callback': function () {
+              // plugins have been loaded to the system now. operate on them!
+
+              for (var panelName in panels) {
+                  panels[panelName].init();
+              }
+          }}
+      };
+
+      for (var packageName in includes) {
+          var pkg = includes[packageName];
+          var includeItems = pkg.items;
+          var includePaths = [];
+          var includeCallback = 'callback' in pkg? pkg.callback: function() {};
+
+          for (var i = 0; i < includeItems.length; i++) {
+              var moduleName = includeItems[i];
+              var scriptPath = packageName + '/' + moduleName + '.js';
+
+              includePaths.push(scriptPath);
+          }
+
+          $.include(includePaths, includeCallback);
+      }
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+  mainWindow.webContents.executeJavaScript("reloadPlugins()");
+
+}
+
+function reloadCallback(message){
+  console.log(message);
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -53,7 +113,7 @@ function createWindow () {
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   //fullscreen
   mainWindow.setFullScreen(true);
@@ -142,6 +202,12 @@ function createWindow () {
   electronLocalshortcut.register(mainWindow, 'Right', () => {
     console.log('Right');
     mainWindow.webContents.executeJavaScript("cyclePlugin('right')");
+    //mainWindow.hide();
+  });
+
+  electronLocalshortcut.register(mainWindow, 'F5', () => {
+    console.log('F5');
+    reloadDatabase();
     //mainWindow.hide();
   });
 
